@@ -192,6 +192,17 @@ app.get("/feedback", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch existing data" });
   }
 });
+app.get("/busspass", async (req, res) => {
+  try {
+    const database = client.db("Varendra-University");
+    const reqCollection = database.collection("busspass-application");
+    const existingFeedback = await reqCollection.find({}).toArray();
+    res.status(200).json(existingFeedback);
+  } catch (err) {
+    console.error("Error fetching existing students:", err);
+    res.status(500).json({ error: "Failed to fetch existing data" });
+  }
+});
 
 app.post("/login", async (req, res) => {
   const { studentID, password } = req.body;
@@ -311,9 +322,32 @@ app.get("/attendance/:studentID", async function (req, res) {
   }
 });
 
-// alumni
+app.get("/admission", async function (req, res) {
+  try {
+    const database = client.db("Varendra-University");
+    const admissionCollection = database.collection("admission");
+    const admissionData = await admissionCollection.find({}).toArray();
+    res.json(admissionData);
+  } catch (err) {
+    console.error("Error fetching admission data:", err);
+    res.status(500).json({ error: "Failed to fetch admission data" });
+  }
+});
 
-// GET method to retrieve all alumni posts
+app.post("/admission", async function (req, res) {
+  const admissionData = req.body;
+  try {
+    const database = client.db("Varendra-University");
+    const admissionCollection = database.collection("admission");
+
+    const result = await admissionCollection.insertOne(admissionData);
+    console.log("Admission data submitted successfully:", result);
+    res.status(200).json({ message: "Admission data submitted successfully!" });
+  } catch (err) {
+    console.error("Error submitting admission data:", err);
+    res.status(500).json({ error: "Failed to submit admission data" });
+  }
+});
 
 app.listen(port, function () {
   console.log(`CORS-enabled web server listening on port ${port}`);
